@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+.DS_Store
+
+# ignore log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.idea/
+.vscode/
+node_modules/
+.docz
+.now
+public
+logs
+yarn.lock
+package-lock.json
+authorization.txt
+leaders.js

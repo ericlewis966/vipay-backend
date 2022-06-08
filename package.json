@@ -1,0 +1,51 @@
+{
+  "name": "ViPay-Backend",
+  "version": "1.0.0",
+  "description": "a payment management app",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "nodemon -r esm index.js --ignore public"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": {
+    "name": "Prince",
+    "email": "prince@staggeeks.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@hapi/boom": "^9.1.4",
+    "@hapi/hapi": "^20.2.1",
+    "@hapi/inert": "^6.0.5",
+    "@hapi/vision": "^6.1.0",
+    "@magic-sdk/admin": "^1.4.1",
+    "async-redis": "^2.0.0",
+    "aws-sdk": "^2.1106.0",
+    "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.0",
+    "esm": "^3.2.25",
+    "file-extension": "^4.0.5",
+    "firebase-admin": "^10.0.2",
+    "fs": "^0.0.1-security",
+    "handlebars": "^4.7.7",
+    "hapi-auth-jwt2": "^10.2.0",
+    "hapi-swagger": "^14.2.5",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mime-types": "^2.1.35",
+    "mongoose": "^6.3.1",
+    "moralis": "^1.8.0",
+    "node-schedule": "^2.1.0",
+    "nodemailer": "^6.7.3",
+    "nodemailer-ses-transport": "^1.5.1",
+    "nodemon": "^2.0.16",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "socket.io": "^4.5.0",
+    "uuidv4": "^6.2.13",
+    "winston": "^3.7.2"
+  }
+}
