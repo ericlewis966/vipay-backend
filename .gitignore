@@ -17,3 +17,5 @@ yarn.lock
 package-lock.json
 authorization.txt
 leaders.js
+.env
+test.js

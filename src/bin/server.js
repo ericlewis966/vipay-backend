@@ -13,6 +13,7 @@ import path from 'path';
 class Server {
   init = async () => {
     try {
+      console.log("ENV vairables", Object.keys(process.env))
       const server = new Hapi.Server({
         port: process.env.PORT,
         host: process.env.HOST,
@@ -25,7 +26,7 @@ class Server {
       //   serverUrl: process.env.MORALIS_SERVER_URL,
       //   appId: process.env.MORALIS_APP_ID
       // });
-      
+
       global.ObjectId = mongoose.Types.ObjectId;
       server.route({
         method: 'GET',
