@@ -154,9 +154,9 @@ export const fileUpload = async file => {
   }
 };
 
-export const uploadFileBuffer = async (buffer, newName, mimeType) => {
+export const uploadFileBuffer = async (buffer, newName, mimeType, userId) => {
   try {
-    await uploadOriginalImage(buffer, newName, mimeType);
+    await uploadOriginalImage(buffer, newName, mimeType, userId);
     return Promise.resolve(newName);
   } catch (err) {
     console.log(err, '========');
@@ -164,7 +164,7 @@ export const uploadFileBuffer = async (buffer, newName, mimeType) => {
   }
 };
 
-async function uploadOriginalImage(fileBuffer, fileName, mimeType) {
+async function uploadOriginalImage(fileBuffer, fileName, mimeType, userId) {
   try {
     AWS.config.update({
       accessKeyId: process.env.ACCESS_KEY_ID,
@@ -181,10 +181,12 @@ async function uploadOriginalImage(fileBuffer, fileName, mimeType) {
       let s3bucket = new AWS.S3();
       let params = {
         Bucket: process.env.BUCKET_NAME,
-        Key: 'images/' + fileName,
+        Key: userId + '/images/' + fileName,
         Body: fileBuffer,
         ContentType: mimeType,
+        ACL: 'public-read'
       };
+      console.log(params)
       return s3bucket.putObject(params).promise();
     }
   } catch (e) {

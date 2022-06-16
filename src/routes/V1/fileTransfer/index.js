@@ -2,6 +2,7 @@ import {
   SWAGGER_RESPONSE_MESSAGE,
   STATUS_MSG,
   LANGUAGE,
+  STRATEGY
 } from '../../../config/AppConstraints';
 import {
   failActionFunction,
@@ -9,9 +10,9 @@ import {
   sendSuccess,
 } from '../../../utils/response';
 import Joi from 'joi';
-import {getFileBuffer} from '../../../utils/universalFunctions';
-import {logger, languageHeader} from '../../../utils/universalFunctions';
-import {FileTransferControllers} from '../../../controllers/V1';
+import { authorizationHeader, getFileBuffer } from '../../../utils/universalFunctions';
+import { logger, languageHeader } from '../../../utils/universalFunctions';
+import { FileTransferControllers } from '../../../controllers/V1';
 const FILE_TRANSFER_ROUTE = [
   {
     method: 'POST',
@@ -19,9 +20,7 @@ const FILE_TRANSFER_ROUTE = [
     options: {
       handler: async (request, reply) => {
         try {
-          let dataToSend = await FileTransferControllers.uploader(
-            request.payload,
-          );
+          let dataToSend = await FileTransferControllers.uploader(request.auth.credentials.data, request.payload);
           return sendSuccess(
             STATUS_MSG.SUCCESS.DEFAULT,
             dataToSend,
@@ -38,6 +37,9 @@ const FILE_TRANSFER_ROUTE = [
       description: 'upload file',
       notes: 'select a valid file and upload it',
       tags: ['api', 'fileTransfer'],
+      auth: {
+        strategy: STRATEGY.USER
+      },
       payload: {
         maxBytes: 200000000,
         parse: true,
@@ -48,9 +50,9 @@ const FILE_TRANSFER_ROUTE = [
       validate: {
         failAction: failActionFunction,
         payload: Joi.object({
-          file: Joi.any().meta({swaggerType: 'file'}).required(),
+          file: Joi.any().meta({ swaggerType: 'file' }).required(),
         }),
-        headers: languageHeader,
+        headers: authorizationHeader,
       },
       plugins: {
         'hapi-swagger': {

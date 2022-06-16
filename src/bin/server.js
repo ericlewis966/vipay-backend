@@ -13,7 +13,6 @@ import path from 'path';
 class Server {
   init = async () => {
     try {
-      console.log("ENV vairables", Object.keys(process.env))
       const server = new Hapi.Server({
         port: process.env.PORT,
         host: process.env.HOST,
