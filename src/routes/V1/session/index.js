@@ -54,6 +54,47 @@ const SESSION_ROUTE = [
       },
     },
   },
+  {
+    method: 'POST',
+    path: '/session/v1/login',
+    options: {
+        // auth: {
+        //     strategy: 'JwtAuth',
+        // },
+        handler: async (request, reply) => {
+            try {
+                request.payload.language =
+                    request.headers['accept-language'] || LANGUAGE.EN;
+                let dataToSend = await SessionControllers.loginWithDIDToken(request.payload);
+                return sendSuccess(
+                    STATUS_MSG.SUCCESS.DEFAULT,
+                    dataToSend,
+                    request.headers['accept-language'] || LANGUAGE.EN,
+                );
+            } catch (err) {
+                return sendError(
+                    err,
+                    request.headers['accept-language'] || LANGUAGE.EN,
+                );
+            }
+        },
+        description: 'Login/Sign up with magic link DID token',
+        tags: ['api', 'session'],
+        validate: {
+            failAction: failActionFunction,
+            payload: Joi.object({
+                token: Joi.string()
+            }),
+            headers: languageHeader,
+        },
+        plugins: {
+            'hapi-swagger': {
+                // payloadType: 'form',
+                responseMessages: SWAGGER_RESPONSE_MESSAGE,
+            },
+        },
+    },
+}
 ];
 
 export default SESSION_ROUTE;

@@ -7,7 +7,7 @@ export const AUTH_TOKEN = {
     /** verify user token stategy */
     server.auth.strategy(STRATEGY.USER, 'jwt', {
       key: process.env.JWT_SECRET,
-      validate: token => verifyToken(token),
+      validate: async(token) => await verifyToken(token),
       verifyOptions: {algorithms: ['HS256']},
     });
   },

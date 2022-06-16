@@ -25,7 +25,7 @@ class Server {
       //   serverUrl: process.env.MORALIS_SERVER_URL,
       //   appId: process.env.MORALIS_APP_ID
       // });
-
+      
       global.ObjectId = mongoose.Types.ObjectId;
       server.route({
         method: 'GET',
@@ -84,7 +84,7 @@ class Server {
     } catch (err) {
       console.log(err, '======error occured======');
     }
-  };
+  };  
 }
 
 export default Server;

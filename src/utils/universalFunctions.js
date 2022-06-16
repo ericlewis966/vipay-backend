@@ -4,6 +4,8 @@ import sesTransport from 'nodemailer-ses-transport';
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcrypt';
+const { Magic } = require('@magic-sdk/admin');
+const mAdmin = new Magic('sk_live_ED089E0A120AE19F');
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import got from 'got';
@@ -16,8 +18,8 @@ import {
   MODELS_NAME,
 } from '../config/AppConstraints';
 import DAO from '../services/queries';
-import {User, OrderCounter} from '../models';
-import {createLogger, transports, format} from 'winston';
+import { User, OrderCounter } from '../models';
+import { createLogger, transports, format } from 'winston';
 import Joi from 'joi';
 /***************************************
  **** Logger for error and success *****
@@ -25,7 +27,7 @@ import Joi from 'joi';
 
 export const logger = createLogger({
   format: format.combine(
-    format.timestamp({format: 'YYYY-MM-DD HH:mm:ss:ms'}),
+    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
     format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
   ),
   transports: [
@@ -54,9 +56,9 @@ export const orderCounterNumber = async model => {
   try {
     let output = await DAO.findAndUpdate(
       OrderCounter,
-      {type: model},
-      {$inc: {count: 1}},
-      {lean: true, new: true, upsert: true},
+      { type: model },
+      { $inc: { count: 1 } },
+      { lean: true, new: true, upsert: true },
     );
     if (output.count >= 0 && output.count < 10) {
       return '000' + output.count;
@@ -114,12 +116,12 @@ export const generateToken = async val => {
     try {
       let key = process.env.JWT_SECRET;
       let token = jwt.sign(
-        {data: val},
+        { data: val },
         key,
         {
           algorithm: 'HS256',
         },
-        {expiresIn: '30d'},
+        { expiresIn: '30d' },
       );
       resolve(token);
     } catch (err) {
@@ -219,7 +221,7 @@ async function uploadMultipart(fileBuffer, fileName, mimeType, fileSize) {
     }
     let etagData = paramsData.map(async params => {
       let temp = await s3bucket.uploadPart(params).promise();
-      return {ETag: temp.ETag, PartNumber: params.PartNumber};
+      return { ETag: temp.ETag, PartNumber: params.PartNumber };
     });
     let dataPacks = await Promise.all(etagData);
     return s3bucket
@@ -280,7 +282,7 @@ async function createPublicDirectory() {
     const newPath = path.join(__dirname, `../../public/uploads`);
     let isExists = await fs.existsSync(newPath);
     if (!isExists) {
-      fs.mkdir(newPath, {recursive: true}, function (err, result) {
+      fs.mkdir(newPath, { recursive: true }, function (err, result) {
         console.log('Created');
       });
     }
@@ -310,9 +312,9 @@ async function createSuperAdmin() {
     defaultAdmin.map(async (val, i) => {
       let findAdmin = await DAO.getDataOne(
         User,
-        {email: val.email},
-        {email: 1},
-        {lean: true},
+        { email: val.email },
+        { email: 1 },
+        { lean: true },
       );
       if (!findAdmin) {
         if (val.password) {
@@ -344,49 +346,49 @@ export const dateTimeFormatString = date => {
 
 export const verifyToken = async token => {
   try {
-    if (token.data._id && token.data.loginTime && token.data.userType) {
+    if (token.data._id) {
       let data = await DAO.getDataOne(
         User,
-        {_id: token.data._id, userType: token.data.userType},
-        {password: 0},
-        {lean: true},
+        { _id: token.data._id, userType: token.data.userType },
+        { password: 0 },
+        { lean: true },
       );
-      if (!data) return STATUS_MSG.ERROR.INVALID_TOKEN;
-      if (data.status === COMMON_STATUS.DELETED) {
-        await DAO.update(
-          User,
-          {_id: token.data._id},
-          {$set: {loginTime: []}},
-          {lean: true},
-        );
-        return STATUS_MSG.ERROR.ACCOUNT_NO_LONGER_EXISTS;
-      }
+      if (!data) throw STATUS_MSG.ERROR.INVALID_TOKEN;
+      // if (data.status === COMMON_STATUS.DELETED) {
+      //   await DAO.update(
+      //     User,
+      //     { _id: token.data._id },
+      //     { $set: { loginTime: [] } },
+      //     { lean: true },
+      //   );
+      //   return STATUS_MSG.ERROR.ACCOUNT_NO_LONGER_EXISTS;
+      // }
 
-      if (data.status === COMMON_STATUS.INACTIVE) {
-        await DAO.update(
-          User,
-          {_id: token.data._id},
-          {$set: {loginTime: []}},
-          {lean: true},
-        );
-        return STATUS_MSG.ERROR.ACCOUNT_SUSPENDED;
-      }
+      // if (data.status === COMMON_STATUS.INACTIVE) {
+      //   await DAO.update(
+      //     User,
+      //     { _id: token.data._id },
+      //     { $set: { loginTime: [] } },
+      //     { lean: true },
+      //   );
+      //   return STATUS_MSG.ERROR.ACCOUNT_SUSPENDED;
+      // }
 
-      if (data.loginTime && data.loginTime.length) {
-        let isValid = false;
-        for (let i = 0; i < data.loginTime.length; i++) {
-          if (
-            Number(data.loginTime[i].loginTime) === Number(token.data.loginTime)
-          ) {
-            isValid = true;
-            break;
-          }
-        }
-        if (!isValid) return STATUS_MSG.ERROR.INVALID_TOKEN;
-        else {
-          return {isValid: true, data: data};
-        }
-      } else return STATUS_MSG.ERROR.INVALID_TOKEN;
+      // if (data.loginTime && data.loginTime.length) {
+      //   let isValid = false;
+      //   for (let i = 0; i < data.loginTime.length; i++) {
+      //     if (
+      //       Number(data.loginTime[i].loginTime) === Number(token.data.loginTime)
+      //     ) {
+      //       isValid = true;
+      //       break;
+      //     }
+      //   }
+      //   if (!isValid) return STATUS_MSG.ERROR.INVALID_TOKEN;
+      else {
+        return { isValid: true, data: data };
+      }
+      // } else return STATUS_MSG.ERROR.INVALID_TOKEN;
     } else return STATUS_MSG.ERROR.INVALID_TOKEN;
   } catch (err) {
     console.log(err, '=======');
@@ -426,7 +428,7 @@ export const currentMonthStartEnd = () => {
       m = date.getMonth();
     let startDate = new Date(new Date(y, m, 1).setHours(0, 0, 0, 0));
     let endDate = new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999));
-    return {startDate, endDate};
+    return { startDate, endDate };
   } catch (err) {
     console.log(err);
   }
@@ -434,15 +436,13 @@ export const currentMonthStartEnd = () => {
 
 export const currentDateString = () => {
   try {
-    return `${new Date().getFullYear()}-${
-      new Date().getMonth() + 1 < 10
-        ? `0${new Date().getMonth() + 1}`
-        : new Date().getMonth() + 1
-    }-${
-      new Date().getDate() < 10
+    return `${new Date().getFullYear()}-${new Date().getMonth() + 1 < 10
+      ? `0${new Date().getMonth() + 1}`
+      : new Date().getMonth() + 1
+      }-${new Date().getDate() < 10
         ? `0${new Date().getDate()}`
         : new Date().getDate()
-    }`;
+      }`;
   } catch (err) {
     console.log(err);
   }
@@ -470,3 +470,12 @@ export const paymentGatewayService = async () => {
     console.log(err);
   }
 };
+
+export const getMagicTokenIssuer = async (DIDToken) => {
+  try {
+    const issuer = mAdmin.token.getIssuer(DIDToken)
+    return mAdmin.users.getMetadataByIssuer(issuer)
+  } catch (err) {
+    throw err
+  }
+}

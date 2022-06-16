@@ -13,7 +13,7 @@ const loginAt = {
 };
 const user = Schema(
   {
-    phone: { type: String, index: true, sparse: true },
+    phone: { type: String, unique: true},
     referalCode: { type: String, index: true, sparse: true, default: "Vi" },
     referedBy: [{ type: String, index: true, sparse: true }],
     deviceId: { type: String, index: true, sparse: true, default: "Vi" },
@@ -38,5 +38,5 @@ const user = Schema(
   },
 );
 
-const User = MONGOOSE.model(`users`, user);
+const User = MONGOOSE.model(`users`, user, '_User');
 export default User;
