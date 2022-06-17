@@ -84,19 +84,26 @@ const SESSION_ROUTE = [
             auth: {
                 strategy: STRATEGY.USER
             },
+            payload: {
+                maxBytes: 5000000,
+                parse: true,
+                output: 'file',
+                timeout: false,
+                multipart: true,
+            },
             validate: {
                 failAction: failActionFunction,
                 payload: Joi.object({
                     name: Joi.string().trim(),
-                    profilePicUrl: Joi.string(),
                     emailOTPVerificationDIDToken: Joi.string().description('DID token from magic if email OTP authentication successful'),
-                    phoneOTPVerificationDIDToken: Joi.string().description('DID token from magic if SMS OTP authentication successful')
+                    phoneOTPVerificationDIDToken: Joi.string().description('DID token from magic if SMS OTP authentication successful'),
+                    profilePic: Joi.any().meta({ swaggerType: 'file' })
                 }),
                 headers: authorizationHeader,
             },
             plugins: {
                 'hapi-swagger': {
-                    // payloadType: 'form',
+                    payloadType: 'form',
                     responseMessages: SWAGGER_RESPONSE_MESSAGE,
                 },
             },

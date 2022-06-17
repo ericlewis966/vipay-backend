@@ -1,9 +1,11 @@
 import { User } from '../../models';
 import {
     getMagicTokenIssuer,
-    generateToken
+    generateToken,
+    resizeImageToThumbnail
 } from '../../utils/universalFunctions';
 import Db from '../../services/queries';
+import { fstat } from 'fs';
 
 export default class UserControllers {
 
@@ -62,15 +64,21 @@ export default class UserControllers {
                 const userMetadata = getMagicTokenIssuer(payload.phoneOTPVerificationDIDToken);
                 dataToSet['phone'] = userMetadata.phone;
             }
-
-
-            const response = await Db.update(
+            if (payload.profilePic) {
+                const buffer = await resizeImageToThumbnail(payload.profilePic.path);
+                dataToSet['profilePic'] = {
+                    data: buffer,
+                    contentType: payload.profilePic.headers['content-type']
+                }
+            }
+            
+            const response = await Db.findAndUpdate(
                 User,
                 { _id: userAuthData._id },
                 {
                     $set: dataToSet
                 },
-                { lean: true },
+                { lean: true, new: true },
             );
 
             return response
@@ -92,6 +100,12 @@ export default class UserControllers {
             if (payload.emailOTPVerificationDIDToken) {
                 const userMetadata = getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
                 dataToSet['email'] = userMetadata.email;
+            }
+            if (payload.profilePic) {
+                const userMetadata = getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
+                dataToSet['profilePic'] = {
+                    data: fstat.re()
+                };
             }
 
             const response = await Db.update(

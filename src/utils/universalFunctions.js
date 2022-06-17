@@ -9,6 +9,7 @@ const mAdmin = new Magic('sk_live_ED089E0A120AE19F');
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import got from 'got';
+import sharp from 'sharp';
 import {
   SERVER,
   USER_TYPE,
@@ -156,8 +157,7 @@ export const fileUpload = async file => {
 
 export const uploadFileBuffer = async (buffer, newName, mimeType, userId) => {
   try {
-    await uploadOriginalImage(buffer, newName, mimeType, userId);
-    return Promise.resolve(newName);
+    return await uploadOriginalImage(buffer, newName, mimeType, userId);
   } catch (err) {
     console.log(err, '========');
     throw err;
@@ -183,11 +183,9 @@ async function uploadOriginalImage(fileBuffer, fileName, mimeType, userId) {
         Bucket: process.env.BUCKET_NAME,
         Key: userId + '/images/' + fileName,
         Body: fileBuffer,
-        ContentType: mimeType,
-        ACL: 'public-read'
+        ContentType: mimeType
       };
-      console.log(params)
-      return s3bucket.putObject(params).promise();
+      return await s3bucket.putObject(params).promise();
     }
   } catch (e) {
     console.log(e, 'uploadOriginalImageErr');
@@ -253,6 +251,20 @@ const writedirAsync = (path, data) => {
     });
   });
 };
+
+export const resizeImageToThumbnail = async (imagePath) => {
+  try {
+    // let fileBuffer = await readFile(imagePath);
+    return await sharp(imagePath)
+      .resize(300, 300, {
+        fit: sharp.fit.inside,
+        position: sharp.strategy.entropy,
+      })
+      .toBuffer();
+  } catch (err) {
+    throw err
+  }
+}
 
 export const getFileBuffer = async payload => {
   try {

@@ -13,14 +13,14 @@ const loginAt = {
 };
 const user = Schema(
   {
-    phone: { type: String, unique: true},
+    phone: { type: String, unique: true },
     referalCode: { type: String, index: true, sparse: true, default: "Vi" },
     referedBy: [{ type: String, index: true, sparse: true }],
     deviceId: { type: String, index: true, sparse: true, default: "Vi" },
     email: { type: String, index: true, sparse: true, default: '', default: "Vi" },
     name: { type: String, index: true, sparse: true, default: "Vi" },
     // _acl : Object,
-    profilePic: { type: String, default: 'default.png' },
+    profilePic: { data: Buffer, contentType: String },
     enable: { type: Boolean, index: true, sparse: true, default: true },
     pin: { type: String, index: true, sparse: true, default: "Vi" },
     ucid: { type: String, index: true, sparse: true, default: "Vi" },
