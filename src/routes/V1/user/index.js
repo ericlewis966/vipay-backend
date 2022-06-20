@@ -15,7 +15,7 @@ import {
 import Joi from 'joi';
 import { logger, authorizationHeader } from '../../../utils/universalFunctions';
 import { UserControllers } from '../../../controllers/V1';
-const SESSION_ROUTE = [
+const USER_ROUTE = [
     {
         method: 'POST',
         path: '/user/v1/sync-contacts',
@@ -109,6 +109,85 @@ const SESSION_ROUTE = [
             },
         },
     },
+    {
+      method: 'PUT',
+      path: '/user/v1/set-pin',
+      options: {
+        handler: async (request, reply) => {
+          try {
+            request.payload.language = request.headers['accept-language'] || LANGUAGE.EN;
+            let dataToSend = await UserControllers.setPin(request.auth.credentials.data, request.payload);
+            return sendSuccess(
+              STATUS_MSG.SUCCESS.DEFAULT,
+              dataToSend,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          } catch (err) {
+            return sendError(
+              err,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          }
+        },
+        tags: ['api', 'user'],
+        auth: {
+          strategy: STRATEGY.USER
+        },
+        validate: {
+          failAction: failActionFunction,
+          payload: Joi.object({
+            pin: Joi.string().length(4).required()
+          }),
+          headers: authorizationHeader,
+        },
+        plugins: {
+          'hapi-swagger': {
+            // payloadType: 'form',
+            responseMessages: SWAGGER_RESPONSE_MESSAGE,
+          },
+        },
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/user/v1/change-pin',
+      options: {
+        handler: async (request, reply) => {
+          try {
+            request.payload.language = request.headers['accept-language'] || LANGUAGE.EN;
+            let dataToSend = await UserControllers.changePin(request.auth.credentials.data, request.payload);
+            return sendSuccess(
+              STATUS_MSG.SUCCESS.DEFAULT,
+              dataToSend,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          } catch (err) {
+            return sendError(
+              err,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          }
+        },
+        tags: ['api', 'user'],
+        auth: {
+          strategy: STRATEGY.USER
+        },
+        validate: {
+          failAction: failActionFunction,
+          payload: Joi.object({
+            oldPin: Joi.string().length(4).required(),
+            newPin: Joi.string().length(4).required()
+          }),
+          headers: authorizationHeader,
+        },
+        plugins: {
+          'hapi-swagger': {
+            // payloadType: 'form',
+            responseMessages: SWAGGER_RESPONSE_MESSAGE,
+          },
+        },
+      },
+    }
 ];
 
-export default SESSION_ROUTE;
+export default USER_ROUTE;

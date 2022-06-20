@@ -42,7 +42,7 @@ export default class SessionControllers {
       if (userMetadata && userMetadata.phoneNumber) {
         const userData = await Db.findAndUpdate(User,
           { phone: userMetadata.phoneNumber },
-          { $setOnInsert: { phone: userMetadata.phoneNumber, email: `${+new Date()}@vi.com`} },
+          { $setOnInsert: { phone: userMetadata.phoneNumber, email: `${+new Date()}@vi.com` } },
           { upsert: true, lean: true, new: true })
 
         userData.token = await generateToken({ _id: userData._id })

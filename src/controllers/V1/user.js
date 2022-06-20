@@ -6,6 +6,15 @@ import {
 } from '../../utils/universalFunctions';
 import Db from '../../services/queries';
 import { fstat } from 'fs';
+import bcrypt from 'bcrypt';
+import {
+    SERVER,
+    USER_TYPE,
+    LANGUAGE,
+    STATUS_MSG,
+    COMMON_STATUS,
+    MODELS_NAME,
+} from '../../config/AppConstraints';
 
 export default class UserControllers {
 
@@ -71,7 +80,7 @@ export default class UserControllers {
                     contentType: payload.profilePic.headers['content-type']
                 }
             }
-            
+
             const response = await Db.findAndUpdate(
                 User,
                 { _id: userAuthData._id },
@@ -119,6 +128,47 @@ export default class UserControllers {
 
             return response
         } catch (err) {
+            throw err
+        }
+    }
+
+    static async setPin(userAuthData, payload) {
+        try {
+            const response = await Db.findAndUpdate(User,
+                { _id: userAuthData._id },
+                { $set: { pin: bcrypt.hashSync(payload.pin, SERVER.SALT) } },
+                { lean: true })
+
+            return response
+        } catch (err) {
+            console.error(JSON.stringify(err));
+            throw err
+        }
+    }
+
+    static async changePin(userAuthData, payload) {
+        try {
+            const userData = await Db.getDataOne(User,
+                { _id: userAuthData._id },
+                { pin: 1 },
+                { lean: true })
+
+            let response
+            //compare old pin
+            if (bcrypt.compareSync(payload.oldPin, userData.pin)) {
+
+                //set new pin
+                response = await Db.findAndUpdate(User,
+                    { _id: userAuthData._id },
+                    { $set: { pin: bcrypt.hashSync(payload.newPin, SERVER.SALT) } },
+                    { new: true })
+            } else {
+                throw 'Incorrect current PIN'
+            }
+
+            return response
+        } catch (err) {
+            console.error(JSON.stringify(err));
             throw err
         }
     }
