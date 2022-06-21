@@ -22,7 +22,7 @@ const user = Schema(
     // _acl : Object,
     profilePic: { data: Buffer, contentType: String },
     enable: { type: Boolean, index: true, sparse: true, default: true },
-    pin: { type: String, index: true, sparse: true, default: "Vi" },
+    pin: { type: String, index: true},
     ucid: { type: String, index: true, sparse: true, default: "Vi" },
     roleId: { type: String, index: true, sparse: true, default: "Vi" },
     isUserLoggedIn: { type: Boolean, index: true, sparse: true, default: false },
