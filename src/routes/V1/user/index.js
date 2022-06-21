@@ -97,7 +97,8 @@ const USER_ROUTE = [
                     name: Joi.string().trim(),
                     emailOTPVerificationDIDToken: Joi.string().description('DID token from magic if email OTP authentication successful'),
                     phoneOTPVerificationDIDToken: Joi.string().description('DID token from magic if SMS OTP authentication successful'),
-                    profilePic: Joi.any().meta({ swaggerType: 'file' })
+                    profilePic: Joi.any().meta({ swaggerType: 'file' }),
+                    defaultArgument: Joi.string().default('NA')
                 }),
                 headers: authorizationHeader,
             },
