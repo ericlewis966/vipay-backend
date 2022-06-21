@@ -137,9 +137,12 @@ export default class UserControllers {
             const response = await Db.findAndUpdate(User,
                 { _id: userAuthData._id },
                 { $set: { pin: bcrypt.hashSync(payload.pin, SERVER.SALT) } },
-                { lean: true })
+                { lean: true, new: true })
 
-            return response
+            if (response)
+                return true
+            else
+                return false
         } catch (err) {
             console.error(JSON.stringify(err));
             throw err
