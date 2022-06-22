@@ -96,7 +96,7 @@ const USER_ROUTE = [
             },
             plugins: {
                 'hapi-swagger': {
-                    // payloadType: 'form',
+                    payloadType: 'form',
                     responseMessages: SWAGGER_RESPONSE_MESSAGE,
                 },
             },
