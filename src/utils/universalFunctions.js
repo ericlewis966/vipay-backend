@@ -4,7 +4,7 @@ import sesTransport from 'nodemailer-ses-transport';
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcrypt';
-const { Magic } = require('@magic-sdk/admin');
+const { Magic, SDKError } = require('@magic-sdk/admin');
 const mAdmin = new Magic('sk_live_ED089E0A120AE19F');
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
@@ -256,7 +256,7 @@ export const resizeImageToThumbnail = async (imagePath) => {
   try {
     // let fileBuffer = await readFile(imagePath);
     return await sharp(imagePath)
-      .resize(300, 300, {
+      .resize(200, 200, {
         fit: sharp.fit.inside,
         position: sharp.strategy.entropy,
       })

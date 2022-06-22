@@ -84,6 +84,48 @@ const USER_ROUTE = [
             auth: {
                 strategy: STRATEGY.USER
             },
+            validate: {
+                failAction: failActionFunction,
+                payload: Joi.object({
+                    name: Joi.string().trim(),
+                    emailOTPVerificationDIDToken: Joi.string().description('DID token from magic if email OTP authentication successful'),
+                    phoneOTPVerificationDIDToken: Joi.string().description('DID token from magic if SMS OTP authentication successful'),
+                    defaultArgument: Joi.string().default('NA')
+                }),
+                headers: authorizationHeader,
+            },
+            plugins: {
+                'hapi-swagger': {
+                    // payloadType: 'form',
+                    responseMessages: SWAGGER_RESPONSE_MESSAGE,
+                },
+            },
+        },
+    },
+    {
+        method: 'PUT',
+        path: '/user/v1/update-profile-pic',
+        options: {
+            handler: async (request, reply) => {
+                try {
+                    request.payload.language = request.headers['accept-language'] || LANGUAGE.EN;
+                    let dataToSend = await UserControllers.editProfile(request.auth.credentials.data, request.payload);
+                    return sendSuccess(
+                        STATUS_MSG.SUCCESS.DEFAULT,
+                        dataToSend,
+                        request.headers['accept-language'] || LANGUAGE.EN,
+                    );
+                } catch (err) {
+                    return sendError(
+                        err,
+                        request.headers['accept-language'] || LANGUAGE.EN,
+                    );
+                }
+            },
+            tags: ['api', 'user'],
+            auth: {
+                strategy: STRATEGY.USER
+            },
             payload: {
                 maxBytes: 5000000,
                 parse: true,
@@ -94,11 +136,7 @@ const USER_ROUTE = [
             validate: {
                 failAction: failActionFunction,
                 payload: Joi.object({
-                    name: Joi.string().trim(),
-                    emailOTPVerificationDIDToken: Joi.string().description('DID token from magic if email OTP authentication successful'),
-                    phoneOTPVerificationDIDToken: Joi.string().description('DID token from magic if SMS OTP authentication successful'),
-                    profilePic: Joi.any().meta({ swaggerType: 'file' }),
-                    defaultArgument: Joi.string().default('NA')
+                    profilePic: Joi.any().meta({ swaggerType: 'file' })
                 }),
                 headers: authorizationHeader,
             },
