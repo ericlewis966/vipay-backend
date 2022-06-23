@@ -108,16 +108,6 @@ export default class UserControllers {
             if ('profilePicUrl' in payload) {
                 dataToSet['profilePic'] = payload.name
             }
-            if (payload.emailOTPVerificationDIDToken) {
-                const userMetadata = getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
-                dataToSet['email'] = userMetadata.email;
-            }
-            if (payload.profilePic) {
-                const userMetadata = getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
-                dataToSet['profilePic'] = {
-                    data: fstat.re()
-                };
-            }
 
             const response = await Db.update(
                 User,
