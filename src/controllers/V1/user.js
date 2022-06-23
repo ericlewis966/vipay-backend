@@ -67,7 +67,6 @@ export default class UserControllers {
             }
             if (payload.emailOTPVerificationDIDToken) {
                 const userMetadata = await getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
-                console.log("\n emailOTPVerificationDIDToken==>", userMetadata);
                 dataToSet['email'] = userMetadata.email;
             }
             if (payload.phoneOTPVerificationDIDToken) {
