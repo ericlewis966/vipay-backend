@@ -66,12 +66,12 @@ export default class UserControllers {
                 dataToSet['profilePic'] = payload.name
             }
             if (payload.emailOTPVerificationDIDToken) {
-                const userMetadata = getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
+                const userMetadata = await getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
                 console.log("\n emailOTPVerificationDIDToken==>", userMetadata);
                 dataToSet['email'] = userMetadata.email;
             }
             if (payload.phoneOTPVerificationDIDToken) {
-                const userMetadata = getMagicTokenIssuer(payload.phoneOTPVerificationDIDToken);
+                const userMetadata = await getMagicTokenIssuer(payload.phoneOTPVerificationDIDToken);
                 dataToSet['phone'] = userMetadata.phone;
             }
 
