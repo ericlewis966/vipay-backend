@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcrypt';
 const { Magic, SDKError } = require('@magic-sdk/admin');
-const mAdmin = new Magic('sk_live_ED089E0A120AE19F');
+const mAdmin = new Magic(process.env.MAGIC_SECRET_KEY);
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import got from 'got';
