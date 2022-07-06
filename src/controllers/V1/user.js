@@ -15,7 +15,6 @@ import {
     COMMON_STATUS,
     MODELS_NAME,
 } from '../../config/AppConstraints';
-
 export default class UserControllers {
 
     static async syncContacts(authData, payload) {
