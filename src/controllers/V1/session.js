@@ -29,7 +29,14 @@ export default class SessionControllers {
 
   static async loginWithDIDToken(payload) {
     try {
-      const userMetadata = await getMagicTokenIssuer(payload.token);
+      let userMetadata
+
+      if(process.env.NODE_ENV == 'local'){
+        userMetadata = { "phoneNumber": '+919875676763' }
+      }
+      else {
+        userMetadata = await getMagicTokenIssuer(payload.token);
+      }
       // const userMetadata = { "phoneNumber": payload.token } //for testing
       /**{
         "issuer": "did:ethr:0x93C81fb56Ad9C4129b2e21C1d4904a6264f7D944",

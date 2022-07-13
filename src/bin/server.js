@@ -64,9 +64,10 @@ class Server {
       });
 
       await mongoose.connect(
-        process.env.NODE_ENV === 'development'
-          ? process.env.DB_URL_LOCAL
-          : process.env.DB_URL_LIVE,
+        // process.env.NODE_ENV === 'development'
+        //   ? 
+          process.env.DB_URL_LOCAL
+          // : process.env.DB_URL_LIVE,
       );
 
       await server.register(Plugins);

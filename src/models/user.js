@@ -11,13 +11,19 @@ const loginAt = {
   deviceToken: { type: String, default: '' },
   remoteAddress: { type: String, default: '' },
 };
+
+const savedWallet = {
+  walletAddress: String,
+  walletLabel: String
+};
+
 const user = Schema(
   {
     phone: { type: String, unique: true },
     referalCode: { type: String, index: true, sparse: true, default: "Vi" },
     referedBy: [{ type: String, index: true, sparse: true }],
     deviceId: { type: String, index: true, sparse: true, default: "Vi" },
-    email: { type: String, index: true, sparse: true, default: '', default: "Vi" },
+    email: { type: String, unique: true},
     name: { type: String, index: true, sparse: true, default: "Vi" },
     // _acl : Object,
     profilePic: { data: Buffer, contentType: String },
@@ -28,6 +34,7 @@ const user = Schema(
     isUserLoggedIn: { type: Boolean, index: true, sparse: true, default: false },
     lastOnline: { type: Number, default: 0, default: 4 },
     loginAtempts: [loginAt],
+    savedWallet: [savedWallet]
   },
   {
     timestamps: {

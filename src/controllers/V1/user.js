@@ -21,11 +21,12 @@ export default class UserControllers {
         try {
             const contactMap = {},
                 allPhoneNumbers = [],
+                finalResponse = [],
                 query = { phone: { $in: allPhoneNumbers } };
 
             payload.list.forEach(contact => {
                 if (contact.phone) {
-                    contactMap[contact.phone] = contact;
+                    contactMap[contact.phone] = { nameInContacts: contact.name, phoneInContacts: contact.phone };
                     allPhoneNumbers.push(contact.phone);
                 }
             })
@@ -44,11 +45,16 @@ export default class UserControllers {
 
             if (response && response[0]) {
                 response.forEach(contactOnboard => {
-                    contactMap[contactOnboard['phone']] = contactOnboard
+                    contactMap[contactOnboard['phone']] = {...contactOnboard, ...contactMap[contactOnboard['phone']]}
                 })
             }
 
-            return contactMap
+            for (let contact in contactMap) {
+                finalResponse.push(contactMap[contact])
+            }
+
+            return finalResponse.sort((a, b) => a.nameInContacts - b.nameInContacts)
+
         } catch (err) {
             throw err
         }
@@ -158,6 +164,27 @@ export default class UserControllers {
             } else {
                 throw 'Incorrect current PIN'
             }
+
+            return response
+        } catch (err) {
+            console.error(JSON.stringify(err));
+            throw err
+        }
+    }
+
+    static async saveWallet(userAuthData, payload) {
+        try {
+            const response = await Db.update(
+                User,
+                {
+                    savedWallet: {
+                        '$push': {
+                            "walletAddress": payload['walletAddress'],
+                            "walletLabel": payload['walletLabel']
+                        }
+                    }
+                }
+            );
 
             return response
         } catch (err) {
