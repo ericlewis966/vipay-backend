@@ -8,7 +8,7 @@ const swaggerOptions = {
     title: Pack.name,
     version: Pack.version,
   },
-  schemes: [process.env.NODE_ENV === 'development' ? 'http' : 'https'],
+  schemes: [process.env.NODE_ENV != 'production' ? 'http' : 'https'],
 };
 
 export const Plugins = [
