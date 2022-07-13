@@ -45,7 +45,7 @@ export default class UserControllers {
 
             if (response && response[0]) {
                 response.forEach(contactOnboard => {
-                    contactMap[contactOnboard['phone']] = {...contactOnboard, ...contactMap[contactOnboard['phone']]}
+                    contactMap[contactOnboard['phone']] = { ...contactOnboard, ...contactMap[contactOnboard['phone']] }
                 })
             }
 
@@ -166,6 +166,25 @@ export default class UserControllers {
             }
 
             return response
+        } catch (err) {
+            console.error(JSON.stringify(err));
+            throw err
+        }
+    }
+
+    static async verifyPin(userAuthData, payload) {
+        try {
+            const userData = await Db.getDataOne(User,
+                { _id: userAuthData._id },
+                { pin: 1 },
+                { lean: true })
+                
+            //compare pin
+            if (bcrypt.compareSync(payload.pin, userData.pin))
+                return userData
+            else
+                throw 'Incorrect current PIN'
+
         } catch (err) {
             console.error(JSON.stringify(err));
             throw err

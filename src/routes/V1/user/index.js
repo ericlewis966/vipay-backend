@@ -226,6 +226,45 @@ const USER_ROUTE = [
           },
         },
       },
+    },
+    {
+      method: 'POST',
+      path: '/user/v1/verify-pin',
+      options: {
+        handler: async (request, reply) => {
+          try {
+            request.payload.language = request.headers['accept-language'] || LANGUAGE.EN;
+            let dataToSend = await UserControllers.verifyPin(request.auth.credentials.data, request.payload);
+            return sendSuccess(
+              STATUS_MSG.SUCCESS.DEFAULT,
+              dataToSend,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          } catch (err) {
+            return sendError(
+              err,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          }
+        },
+        tags: ['api', 'user'],
+        auth: {
+          strategy: STRATEGY.USER
+        },
+        validate: {
+          failAction: failActionFunction,
+          payload: Joi.object({
+            pin: Joi.string().length(4).required()
+          }),
+          headers: authorizationHeader,
+        },
+        plugins: {
+          'hapi-swagger': {
+            // payloadType: 'form',
+            responseMessages: SWAGGER_RESPONSE_MESSAGE,
+          },
+        },
+      },
     }
 ];
 
