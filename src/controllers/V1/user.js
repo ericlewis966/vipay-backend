@@ -1,4 +1,4 @@
-import { User } from '../../models';
+import { User, SupportQueries } from '../../models';
 import {
     getMagicTokenIssuer,
     generateToken,
@@ -178,7 +178,7 @@ export default class UserControllers {
                 { _id: userAuthData._id },
                 { pin: 1 },
                 { lean: true })
-                
+
             //compare pin
             if (bcrypt.compareSync(payload.pin, userData.pin))
                 return userData
@@ -196,6 +196,9 @@ export default class UserControllers {
             const response = await Db.update(
                 User,
                 {
+                    _id: userAuthData._id
+                },
+                {
                     savedWallet: {
                         '$push': {
                             "walletAddress": payload['walletAddress'],
@@ -211,4 +214,23 @@ export default class UserControllers {
             throw err
         }
     }
+
+    static async raiseSupportQuery(userAuthData, payload) {
+        try {
+          const response = await Db.saveData(
+            SupportQueries,
+            {
+              userId: userAuthData._id,
+              name: payload.name,
+              phone: payload.phone,
+              email: payload.email,
+              message: payload.message
+            }
+          );
+          return response
+        } catch (err) {
+          logger.error(JSON.stringify(err));
+          return Promise.reject(err);
+        }
+      }
 }

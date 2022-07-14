@@ -1,3 +1,4 @@
 import OrderCounter from './orderCounter';
 import User from './user';
-export {OrderCounter, User};
+import SupportQueries from './supportQueries';
+export {OrderCounter, User, SupportQueries};
