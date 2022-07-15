@@ -265,6 +265,88 @@ const USER_ROUTE = [
           },
         },
       },
+    },
+    {
+      method: 'POST',
+      path: '/user/v1/save-wallet',
+      options: {
+        handler: async (request, reply) => {
+          try {
+            request.payload.language = request.headers['accept-language'] || LANGUAGE.EN;
+            let dataToSend = await UserControllers.saveWallet(request.auth.credentials.data, request.payload);
+            return sendSuccess(
+              STATUS_MSG.SUCCESS.DEFAULT,
+              dataToSend,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          } catch (err) {
+            return sendError(
+              err,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          }
+        },
+        tags: ['api', 'user'],
+        auth: {
+          strategy: STRATEGY.USER
+        },
+        validate: {
+          failAction: failActionFunction,
+          payload: Joi.object({
+            walletAddress: Joi.string().required(),
+            walletLabel: Joi.string().required()
+          }),
+          headers: authorizationHeader,
+        },
+        plugins: {
+          'hapi-swagger': {
+            payloadType: 'form',
+            responseMessages: SWAGGER_RESPONSE_MESSAGE,
+          },
+        },
+      },
+    },
+    {
+      method: 'POST',
+      path: '/user/v1/raise-support-query',
+      options: {
+        handler: async (request, reply) => {
+          try {
+            request.payload.language = request.headers['accept-language'] || LANGUAGE.EN;
+            let dataToSend = await UserControllers.raiseSupportQuery(request.auth.credentials.data, request.payload);
+            return sendSuccess(
+              STATUS_MSG.SUCCESS.DEFAULT,
+              dataToSend,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          } catch (err) {
+            return sendError(
+              err,
+              request.headers['accept-language'] || LANGUAGE.EN,
+            );
+          }
+        },
+        tags: ['api', 'user'],
+        auth: {
+          strategy: STRATEGY.USER
+        },
+        validate: {
+          failAction: failActionFunction,
+          payload: Joi.object({
+            name: Joi.string().required(),
+            phone: Joi.string().required(),
+            email: Joi.string().email().required(),
+            message: Joi.string().min(1).required(),
+          }),
+          headers: authorizationHeader,
+        },
+        plugins: {
+          'hapi-swagger': {
+            payloadType: 'form',
+            responseMessages: SWAGGER_RESPONSE_MESSAGE,
+          },
+        },
+      },
     }
 ];
 
