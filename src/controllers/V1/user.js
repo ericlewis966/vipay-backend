@@ -202,7 +202,8 @@ export default class UserControllers {
                     savedWallet: {
                         '$push': {
                             "walletAddress": payload['walletAddress'],
-                            "walletLabel": payload['walletLabel']
+                            "walletLabel": payload['walletLabel'],
+                            "network": payload['network']
                         }
                     }
                 }

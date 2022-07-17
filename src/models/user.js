@@ -14,7 +14,8 @@ const loginAt = {
 
 const savedWallet = {
   walletAddress: String,
-  walletLabel: String
+  walletLabel: String,
+  network: String
 };
 
 const user = Schema(

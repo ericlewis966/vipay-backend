@@ -294,7 +294,8 @@ const USER_ROUTE = [
           failAction: failActionFunction,
           payload: Joi.object({
             walletAddress: Joi.string().required(),
-            walletLabel: Joi.string().required()
+            walletLabel: Joi.string().required(),
+            network: Joi.string().required()
           }),
           headers: authorizationHeader,
         },
