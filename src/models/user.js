@@ -12,12 +12,6 @@ const loginAt = {
   remoteAddress: { type: String, default: '' },
 };
 
-const savedWallet = {
-  walletAddress: String,
-  walletLabel: String,
-  network: String
-};
-
 const user = Schema(
   {
     phone: { type: String, unique: true },
@@ -35,7 +29,10 @@ const user = Schema(
     isUserLoggedIn: { type: Boolean, index: true, sparse: true, default: false },
     lastOnline: { type: Number, default: 0, default: 4 },
     loginAtempts: [loginAt],
-    savedWallet: [savedWallet]
+    vipayWallet: {
+      balance: {type: Number, default: 0},
+      isDisplayed: {type: Boolean, default: true}
+    }
   },
   {
     timestamps: {

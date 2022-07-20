@@ -14,7 +14,8 @@ const supportQueries = Schema(
     name: String,
     phone: String,
     email: String,
-    message: String
+    message: String,
+    isResolved: { type: Boolean, default: false }
   },
   {
     timestamps: {

@@ -348,6 +348,45 @@ const USER_ROUTE = [
           },
         },
       },
+    // },
+    // {
+    //   method: 'GET',
+    //   path: '/user/v1/redeem-voucher',
+    //   options: {
+    //     handler: async (request, reply) => {
+    //       try {
+    //         request.query.language = request.headers['accept-language'] || LANGUAGE.EN;
+    //         let dataToSend = await UserControllers.redeemVoucherCode(request.auth.credentials.data, request.query);
+    //         return sendSuccess(
+    //           STATUS_MSG.SUCCESS.DEFAULT,
+    //           dataToSend,
+    //           request.headers['accept-language'] || LANGUAGE.EN,
+    //         );
+    //       } catch (err) {
+    //         return sendError(
+    //           err,
+    //           request.headers['accept-language'] || LANGUAGE.EN,
+    //         );
+    //       }
+    //     },
+    //     tags: ['api', 'user'],
+    //     auth: {
+    //       strategy: STRATEGY.USER
+    //     },
+    //     validate: {
+    //       failAction: failActionFunction,
+    //       query: Joi.object({
+    //         code: Joi.string().uppercase().required()
+    //       }),
+    //       headers: authorizationHeader,
+    //     },
+    //     plugins: {
+    //       'hapi-swagger': {
+    //         payloadType: 'form',
+    //         responseMessages: SWAGGER_RESPONSE_MESSAGE,
+    //       },
+    //     },
+    //   },
     }
 ];
 

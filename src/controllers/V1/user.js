@@ -1,8 +1,9 @@
-import { User, SupportQueries } from '../../models';
+import { User, SupportQueries, SavedWallet, VoucherCodes } from '../../models';
 import {
     getMagicTokenIssuer,
     generateToken,
-    resizeImageToThumbnail
+    resizeImageToThumbnail,
+    logger
 } from '../../utils/universalFunctions';
 import Db from '../../services/queries';
 import { fstat } from 'fs';
@@ -193,22 +194,15 @@ export default class UserControllers {
 
     static async saveWallet(userAuthData, payload) {
         try {
-            const response = await Db.update(
-                User,
+            const response = await Db.saveData(
+                SavedWallet,
                 {
-                    _id: userAuthData._id
-                },
-                {
-                    savedWallet: {
-                        '$push': {
-                            "walletAddress": payload['walletAddress'],
-                            "walletLabel": payload['walletLabel'],
-                            "network": payload['network']
-                        }
-                    }
+                    userId: userAuthData._id,
+                    "walletAddress": payload['walletAddress'],
+                    "walletLabel": payload['walletLabel'],
+                    "network": payload['network']
                 }
             );
-
             return response
         } catch (err) {
             console.error(JSON.stringify(err));
@@ -218,20 +212,53 @@ export default class UserControllers {
 
     static async raiseSupportQuery(userAuthData, payload) {
         try {
-          const response = await Db.saveData(
-            SupportQueries,
-            {
-              userId: userAuthData._id,
-              name: payload.name,
-              phone: payload.phone,
-              email: payload.email,
-              message: payload.message
-            }
-          );
-          return response
+            const response = await Db.saveData(
+                SupportQueries,
+                {
+                    userId: userAuthData._id,
+                    name: payload.name,
+                    phone: payload.phone,
+                    email: payload.email,
+                    message: payload.message
+                }
+            );
+            return response
         } catch (err) {
-          logger.error(JSON.stringify(err));
-          return Promise.reject(err);
+            logger.error(JSON.stringify(err));
+            return Promise.reject(err);
         }
-      }
+    }
+
+    static async redeemVoucherCode(userAuthData, payload) {
+        try {
+            const voucher = await Db.getDataOne(
+                VoucherCodes,
+                {
+                    code: payload.code,
+                    expiry: { $gte: new Date() },
+                    isEnabled: true
+                },
+                { amount: 1 },
+                { lean: true }
+            );
+
+            //add to vipay wallet
+            if (voucher && voucher.amount)
+                await Db.findAndUpdate(
+                    User,
+                    { _id: userAuthData._id },
+                    {
+                        '$inc': { 'vipayWallet.balance': voucher.amount }
+                    },
+                    { lean: true },
+                );
+            else
+                throw 'Invalid Voucher Code'
+
+            return voucher
+        } catch (err) {
+            logger.error(JSON.stringify(err));
+            return Promise.reject(err);
+        }
+    }
 }
