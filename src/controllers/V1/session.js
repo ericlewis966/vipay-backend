@@ -31,7 +31,7 @@ export default class SessionControllers {
     try {
       let userMetadata
 
-      if(process.env.NODE_ENV == 'local'){
+      if (process.env.NODE_ENV == 'local') {
         userMetadata = { "phoneNumber": '+919875676763' }
       }
       else {
@@ -45,6 +45,19 @@ export default class SessionControllers {
         "oauthProvider": null,
         "phoneNumber": "+918968124604"
       } */
+
+      //check if referral is valid and same device hasn't been used for the same referral code
+      // if (payload.referredBy && payload.deviceId) {
+      //   const sameDeviceUser = await Db.getDataOne(User,
+      //     { referredBy: { $ne: null }, deviceId: payload.deviceId },
+      //     { _id: 1 },
+      //     { lean: true }
+      //   )
+
+      //   if (sameDeviceUser)
+      //     throw 'This device is already registered through a referral'
+
+      // }
 
       if (userMetadata && userMetadata.phoneNumber) {
         const userData = await Db.findAndUpdate(User,

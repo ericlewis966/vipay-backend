@@ -16,22 +16,25 @@ const user = Schema(
   {
     phone: { type: String, unique: true },
     referalCode: { type: String, index: true, sparse: true, default: "Vi" },
-    referedBy: [{ type: String, index: true, sparse: true }],
-    deviceId: { type: String, index: true, sparse: true, default: "Vi" },
-    email: { type: String, unique: true},
+    referredBy: {
+      type: Schema.ObjectId,
+      ref: '_User'
+    },
+    deviceId: { type: String, index: true },
+    email: { type: String, unique: true },
     name: { type: String, index: true, sparse: true, default: "Vi" },
     // _acl : Object,
     profilePic: { data: Buffer, contentType: String },
     enable: { type: Boolean, index: true, sparse: true, default: true },
-    pin: { type: String, index: true},
+    pin: { type: String, index: true },
     ucid: { type: String, index: true, sparse: true, default: "Vi" },
     roleId: { type: String, index: true, sparse: true, default: "Vi" },
     isUserLoggedIn: { type: Boolean, index: true, sparse: true, default: false },
     lastOnline: { type: Number, default: 0, default: 4 },
     loginAtempts: [loginAt],
     vipayWallet: {
-      balance: {type: Number, default: 0},
-      isDisplayed: {type: Boolean, default: true}
+      balance: { type: Number, default: 0 },
+      isDisplayed: { type: Boolean, default: true }
     }
   },
   {

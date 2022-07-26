@@ -210,6 +210,24 @@ export default class UserControllers {
         }
     }
 
+    static async listSavedWallet(userAuthData, payload) {
+        try {
+            const response = await Db.getData(
+                SavedWallet,
+                {
+                    userId: userAuthData._id,
+                    "network": payload['network']
+                },
+                {},
+                { lean: true, sort: { createdAt: -1 } }
+            );
+            return response
+        } catch (err) {
+            console.error(JSON.stringify(err));
+            throw err
+        }
+    }
+
     static async raiseSupportQuery(userAuthData, payload) {
         try {
             const response = await Db.saveData(
