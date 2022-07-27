@@ -83,7 +83,9 @@ const SESSION_ROUTE = [
       validate: {
         failAction: failActionFunction,
         payload: Joi.object({
-          token: Joi.string()
+          token: Joi.string(),
+          deviceId: Joi.string().required(),
+          referredBy: Joi.string()
         }),
         headers: languageHeader,
       },
