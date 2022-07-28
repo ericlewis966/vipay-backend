@@ -1,5 +1,5 @@
 
-import { User } from '../../models';
+import { User, AppConstants } from '../../models';
 import {
   getMagicTokenIssuer,
   generateToken
@@ -29,7 +29,7 @@ export default class SessionControllers {
 
   static async loginWithDIDToken(payload) {
     try {
-      let userMetadata;
+      let userMetadata, appConstants;
       const dataToInsert = { deviceId: payload.deviceId };
 
       if (process.env.NODE_ENV == 'local') {
@@ -59,6 +59,14 @@ export default class SessionControllers {
         if (sameReferralSameDeviceUser)
           throw 'This device is already registered through a referral'
         else {
+          //get current bonus amounts set in the system
+          appConstants = await Db.getDataOne(
+            AppConstants,
+            {},
+            {},
+            { lean: true }
+          )
+
           dataToInsert['referredBy'] = payload.referredBy
         }
 
@@ -69,9 +77,10 @@ export default class SessionControllers {
         dataToInsert['phone'] = userMetadata.phoneNumber;
         dataToInsert['email'] = `${+new Date()}@vi.com`;
 
-        if (dataToInsert['referredBy']) { //if coming through avalid referral
-          dataToInsert['vipayWallet.balance'] = 10
-        }
+        if (dataToInsert['referredBy'])  //if coming through a valid referral
+          dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus + appConstants.refereeBonus
+        else
+          dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus
 
         const userData = await Db.findAndUpdate(User,
           { phone: userMetadata.phoneNumber },
@@ -79,6 +88,15 @@ export default class SessionControllers {
           { upsert: true, lean: true, new: true })
 
         userData.token = await generateToken({ _id: userData._id })
+
+        //give referrer bonus
+        if (dataToInsert['referredBy'])
+          await Db.updateOne(
+            User,
+            { _id: dataToInsert['referredBy'] },
+            { $inc: { 'vipayWallet.balance': appConstants.referrerBonus } },
+            { lean: true })
+
         return userData
       } else
         throw 'Invalid Credentials'

@@ -73,6 +73,15 @@ export default class Services {
     }
   }
 
+  static async updateOne(model, conditions, update, options) {
+    try {
+      let data = await model.updateOne(conditions, update, options);
+      return Promise.resolve(data);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
   static async remove(model, condition) {
     try {
       let data = await model.deleteMany(condition);
