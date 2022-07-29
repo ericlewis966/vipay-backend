@@ -29,7 +29,7 @@ export default class SessionControllers {
 
   static async loginWithDIDToken(payload) {
     try {
-      let userMetadata, appConstants;
+      let userMetadata;
       const dataToInsert = { deviceId: payload.deviceId };
 
       if (process.env.NODE_ENV == 'local') {
@@ -48,6 +48,14 @@ export default class SessionControllers {
         "phoneNumber": "+918968124604"
       } */
 
+      //get current bonus amounts set in the system
+      const appConstants = await Db.getDataOne(
+        AppConstants,
+        {},
+        {},
+        { lean: true }
+      )
+
       //check if referral is valid and same device hasn't been used for the same referral code
       if (payload.referredBy && payload.deviceId) {
         const sameReferralSameDeviceUser = await Db.getDataOne(User,
@@ -59,14 +67,6 @@ export default class SessionControllers {
         if (sameReferralSameDeviceUser)
           throw 'This device is already registered through a referral'
         else {
-          //get current bonus amounts set in the system
-          appConstants = await Db.getDataOne(
-            AppConstants,
-            {},
-            {},
-            { lean: true }
-          )
-
           dataToInsert['referredBy'] = payload.referredBy
         }
 
