@@ -10,7 +10,11 @@ const voucherCodes = Schema(
     amount: { type: Number, required: true },
     expiry: { type: Date, required: true },
     isEnabled: { type: Boolean, default: true },
-    code: { type: String, required: true }
+    code: { type: String, required: true },
+    usedBy: [{
+      type: Schema.ObjectId,
+      ref: '_User'
+    }],
   },
   {
     timestamps: {

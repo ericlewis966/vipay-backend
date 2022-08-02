@@ -254,14 +254,15 @@ export default class UserControllers {
                 {
                     code: payload.code,
                     expiry: { $gte: new Date() },
-                    isEnabled: true
+                    isEnabled: true,
+                    usedBy: { '$ne': userAuthData._id }
                 },
                 { amount: 1 },
                 { lean: true }
             );
 
             //add to vipay wallet
-            if (voucher && voucher.amount)
+            if (voucher && voucher.amount) {
                 await Db.findAndUpdate(
                     User,
                     { _id: userAuthData._id },
@@ -270,6 +271,15 @@ export default class UserControllers {
                     },
                     { lean: true },
                 );
+
+                await Db.findAndUpdate(
+                    VoucherCodes,
+                    { _id: voucher._id },
+                    {
+                        '$addToSet': { 'usedBy': userAuthData._id }
+                    }
+                )
+            }
             else
                 throw 'Invalid Voucher Code'
 
