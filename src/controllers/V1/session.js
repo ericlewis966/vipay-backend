@@ -29,7 +29,8 @@ export default class SessionControllers {
 
   static async loginWithDIDToken(payload) {
     try {
-      let userMetadata;
+      let userMetadata,
+        offerBonus = true;
       const dataToInsert = { deviceId: payload.deviceId };
 
       if (process.env.NODE_ENV == 'local') {
@@ -56,18 +57,31 @@ export default class SessionControllers {
         { lean: true }
       )
 
-      //check if referral is valid and same device hasn't been used for the same referral code
-      if (payload.referredBy && payload.deviceId) {
-        const sameReferralSameDeviceUser = await Db.getDataOne(User,
-          { referredBy: payload.referredBy, deviceId: payload.deviceId },
+      if (payload.deviceId) {
+        //check if referral is valid and same device hasn't been used for the same referral code
+        if (payload.referredBy) {
+          const sameReferralSameDeviceUser = await Db.getDataOne(User,
+            { referredBy: payload.referredBy, deviceId: payload.deviceId },
+            { _id: 1 },
+            { lean: true }
+          )
+
+          if (sameReferralSameDeviceUser)
+            throw 'This device is already registered through a referral'
+          else {
+            dataToInsert['referredBy'] = payload.referredBy
+          }
+        }
+
+        //if another user from same device exists, avoid any bonus
+        const anotherUserFromSameDevice = await Db.getDataOne(User,
+          { deviceId: payload.deviceId },
           { _id: 1 },
           { lean: true }
         )
 
-        if (sameReferralSameDeviceUser)
-          throw 'This device is already registered through a referral'
-        else {
-          dataToInsert['referredBy'] = payload.referredBy
+        if (anotherUserFromSameDevice) {
+          offerBonus = false
         }
 
       }
@@ -75,12 +89,15 @@ export default class SessionControllers {
       if (userMetadata && userMetadata.phoneNumber) {
 
         dataToInsert['phone'] = userMetadata.phoneNumber;
+        dataToInsert['vipayId'] = userMetadata.phoneNumber + '@vipay';
         dataToInsert['email'] = `${+new Date()}@vi.com`;
 
-        if (dataToInsert['referredBy'])  //if coming through a valid referral
-          dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus + appConstants.refereeBonus
-        else
-          dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus
+        if (offerBonus) {
+          if (dataToInsert['referredBy'])  //if coming through a valid referral
+            dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus + appConstants.refereeBonus
+          else
+            dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus
+        }
 
         const userData = await Db.findAndUpdate(User,
           { phone: userMetadata.phoneNumber },

@@ -69,7 +69,7 @@ export default class UserControllers {
                 dataToSet['name'] = payload.name
             }
             if ('profilePicUrl' in payload) {
-                dataToSet['profilePic'] = payload.name
+                dataToSet['profilePic'] = payload.profilePicUrl
             }
             if (payload.emailOTPVerificationDIDToken) {
                 const userMetadata = await getMagicTokenIssuer(payload.emailOTPVerificationDIDToken);
@@ -78,14 +78,6 @@ export default class UserControllers {
             if (payload.phoneOTPVerificationDIDToken) {
                 const userMetadata = await getMagicTokenIssuer(payload.phoneOTPVerificationDIDToken);
                 dataToSet['phone'] = userMetadata.phone;
-            }
-
-            if (payload.profilePic) {
-                const buffer = await resizeImageToThumbnail(payload.profilePic.path);
-                dataToSet['profilePic'] = {
-                    data: buffer,
-                    contentType: payload.profilePic.headers['content-type']
-                }
             }
 
             const response = await Db.findAndUpdate(

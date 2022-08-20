@@ -21,10 +21,10 @@ const user = Schema(
       ref: '_User'
     },
     deviceId: { type: String, index: true },
-    email: { type: String, unique: true },
+    email: { type: String, unique: true, sparse: true },
     name: { type: String, index: true, sparse: true, default: "Vi" },
     // _acl : Object,
-    profilePic: { data: Buffer, contentType: String },
+    profilePic: String,
     enable: { type: Boolean, index: true, sparse: true, default: true },
     pin: { type: String, index: true },
     ucid: { type: String, index: true, sparse: true, default: "Vi" },
@@ -32,6 +32,7 @@ const user = Schema(
     isUserLoggedIn: { type: Boolean, index: true, sparse: true, default: false },
     lastOnline: { type: Number, default: 0, default: 4 },
     loginAtempts: [loginAt],
+    vipayId: { type: String, unique: true },
     vipayWallet: {
       balance: { type: Number, default: 0 },
       isDisplayed: { type: Boolean, default: true }
