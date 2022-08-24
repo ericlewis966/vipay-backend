@@ -94,7 +94,10 @@ export default class SessionControllers {
 
         if (offerBonus) {
           if (dataToInsert['referredBy'])  //if coming through a valid referral
+          {
             dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus + appConstants.refereeBonus
+            dataToInsert['referrerBonus'] = appConstants.referrerBonus
+          }
           else
             dataToInsert['vipayWallet.balance'] = appConstants.joiningBonus
         }

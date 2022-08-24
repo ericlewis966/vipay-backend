@@ -20,6 +20,7 @@ const user = Schema(
       type: Schema.ObjectId,
       ref: '_User'
     },
+    referrerBonus: Number,
     deviceId: { type: String, index: true },
     email: { type: String, unique: true, sparse: true },
     name: { type: String, index: true, sparse: true, default: "Vi" },

@@ -239,6 +239,24 @@ export default class UserControllers {
         }
     }
 
+    static async listReferredUsers(userAuthData, payload) {
+        try {
+            const response = await Db.getData(
+                User,
+                {
+                    referredBy: userAuthData._id
+                },
+                { name: 1, profilePic: 1, referrerBonus: 1, createdAt: 1 },
+                { sort: { createdAt: -1 }, lean: true }
+            );
+
+            return response
+        } catch (err) {
+            logger.error(JSON.stringify(err));
+            return Promise.reject(err);
+        }
+    }
+
     static async redeemVoucherCode(userAuthData, payload) {
         try {
             const voucher = await Db.getDataOne(
