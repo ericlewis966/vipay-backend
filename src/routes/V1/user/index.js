@@ -376,9 +376,9 @@ const USER_ROUTE = [
       },
       validate: {
         failAction: failActionFunction,
-        query: Joi.object({
-          network: Joi.string().required()
-        }),
+        // query: Joi.object({
+        //   network: Joi.string().required()
+        // }),
         headers: authorizationHeader,
       },
       plugins: {
