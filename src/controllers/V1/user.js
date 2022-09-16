@@ -16,6 +16,7 @@ import {
     COMMON_STATUS,
     MODELS_NAME,
 } from '../../config/AppConstraints';
+import mongoose from 'mongoose';
 export default class UserControllers {
 
     static async syncContacts(authData, payload) {
@@ -204,14 +205,12 @@ export default class UserControllers {
 
     static async listSavedWallet(userAuthData, payload) {
         try {
-            const response = await Db.getData(
+            const response = await Db.aggregateData(
                 SavedWallet,
-                {
-                    userId: userAuthData._id,
-                    "network": payload['network']
-                },
-                {},
-                { lean: true, sort: { createdAt: -1 } }
+                [
+                    { '$match': { userId: userAuthData._id } },
+                    { '$group': { _id: "$network", wallets: { '$push': "$$ROOT" } } },
+                ]
             );
             return response
         } catch (err) {
