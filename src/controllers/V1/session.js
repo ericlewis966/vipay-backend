@@ -37,8 +37,9 @@ export default class SessionControllers {
         userMetadata = { "phoneNumber": '+919875676763' }
       }
       else {
+        console.log("---userMetadatauserMetadata---1>>", payload);
         userMetadata = await getMagicTokenIssuer(payload.token);
-        console.log(userMetadata);
+        console.log("---userMetadatauserMetadata---2>>", userMetadata);
       }
 
       // const userMetadata = { "phoneNumber": payload.token } //for testing
