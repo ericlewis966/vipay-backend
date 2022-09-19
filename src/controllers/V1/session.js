@@ -90,7 +90,6 @@ export default class SessionControllers {
 
         dataToInsert['phone'] = userMetadata.phoneNumber;
         dataToInsert['vipayId'] = userMetadata.phoneNumber + '@vipay';
-        dataToInsert['email'] = `${+new Date()}@vi.com`;
 
         if (offerBonus) {
           if (dataToInsert['referredBy'])  //if coming through a valid referral
