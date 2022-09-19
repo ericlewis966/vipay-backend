@@ -209,7 +209,7 @@ export default class UserControllers {
             const response = await Db.aggregateData(
                 SavedWallet,
                 [
-                    { '$match': { userId: userAuthData._id } },
+                    { '$match': { userId: mongoose.Types.ObjectId(userAuthData._id) } },
                     { '$group': { _id: "$network", wallets: { '$push': "$$ROOT" } } },
                 ]
             );

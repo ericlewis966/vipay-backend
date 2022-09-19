@@ -364,7 +364,8 @@ export const verifyToken = async token => {
       let data = await DAO.getDataOne(
         User,
         { _id: token.data._id, userType: token.data.userType },
-        { password: 0 }
+        { password: 0 },
+        { lean: true },
       );
       if (!data) throw STATUS_MSG.ERROR.INVALID_TOKEN;
       // if (data.status === COMMON_STATUS.DELETED) {
