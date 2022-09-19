@@ -38,6 +38,7 @@ export default class SessionControllers {
       }
       else {
         userMetadata = await getMagicTokenIssuer(payload.token);
+        console.log(userMetadata);
       }
 
       // const userMetadata = { "phoneNumber": payload.token } //for testing
