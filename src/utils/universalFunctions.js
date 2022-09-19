@@ -487,12 +487,10 @@ export const paymentGatewayService = async () => {
 
 export const getMagicTokenIssuer = async (DIDToken) => {
   try {
-    // const issuer = mAdmin.token.getIssuer(DIDToken)
-    const issuer = await got.get(`https://api.magic.link/v1/admin/auth/user/get?issuer=${DIDToken}`, { respopnse: 'json', headers: { 'X-Magic-Secret-Key': process.env.MAGIC_SECRET_KEY }})
-    console.log(issuer)
+    const issuer = mAdmin.token.getIssuer(DIDToken)
+    // const issuer = await got.get(`https://api.magic.link/v1/admin/auth/user/get?issuer=${DIDToken}`, { respopnse: 'json', headers: { 'X-Magic-Secret-Key': process.env.MAGIC_SECRET_KEY }})
+    // console.log(issuer)
     return mAdmin.users.getMetadataByIssuer(issuer)
-
-
   } catch (err) {
     throw err
   }
