@@ -205,6 +205,7 @@ export default class UserControllers {
 
     static async listSavedWallet(userAuthData, payload) {
         try {
+            console.log(userAuthData)
             const response = await Db.aggregateData(
                 SavedWallet,
                 [
