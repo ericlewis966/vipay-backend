@@ -245,7 +245,7 @@ export default class UserControllers {
                 {
                     referredBy: userAuthData._id
                 },
-                { name: 1, profilePic: 1, referrerBonus: 1, createdAt: 1 },
+                { name: 1, profilePic: 1, referrerBonus: 1, "createdAt": { "$subtract": ["$createdAt", new Date("1970-01-01")] } },
                 { sort: { createdAt: -1 }, lean: true }
             );
 
