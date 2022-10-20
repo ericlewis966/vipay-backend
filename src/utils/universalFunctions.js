@@ -8,7 +8,8 @@ const { Magic, SDKError } = require('@magic-sdk/admin');
 const mAdmin = new Magic(process.env.MAGIC_SECRET_KEY);
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
-import got from 'got';
+// import got from 'got';
+import axios from 'axios'
 import sharp from 'sharp';
 import {
   SERVER,
@@ -465,7 +466,8 @@ export const currentDateString = () => {
 export const countryDataFinder = async ip => {
   try {
     const url = `http://ip-api.com/json/${ip}`;
-    let countryData = await got(url).json();
+    // let countryData = await got(url).json();
+    let countryData = await (await axios.get(url)).data;
     if (countryData && countryData.country) {
       return countryData.country;
     } else {
