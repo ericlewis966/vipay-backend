@@ -8,7 +8,6 @@ const { Magic, SDKError } = require('@magic-sdk/admin');
 const mAdmin = new Magic(process.env.MAGIC_SECRET_KEY);
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
-// import got from 'got';'
 import axios from 'axios';
 import sharp from 'sharp';
 import {
