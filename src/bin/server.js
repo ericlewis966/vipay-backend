@@ -7,7 +7,7 @@ import { Routes_v1 } from '../routes/V1';
 import { Plugins } from '../plugins';
 import { createDefaultData } from '../utils/universalFunctions';
 import { connectSocket } from '../utils/socketManager';
-import { scheduler } from '../utils/scheduler';
+// import { scheduler } from '../utils/scheduler';
 import redis from 'async-redis';
 import path from 'path';
 class Server {

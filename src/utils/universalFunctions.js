@@ -8,8 +8,7 @@ const { Magic, SDKError } = require('@magic-sdk/admin');
 const mAdmin = new Magic(process.env.MAGIC_SECRET_KEY);
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
-// import got from 'got';
-import axios from 'axios'
+import axios from 'axios';
 import sharp from 'sharp';
 import {
   SERVER,
@@ -77,41 +76,41 @@ export const orderCounterNumber = async model => {
   }
 };
 
-export const sendEmail = async (
-  email,
-  content,
-  subject,
-  attachmentPath = null,
-) => {
-  try {
-    const transporter = await nodemailer.createTransport(
-      sesTransport({
-        accessKeyId: process.env.ACCESS_KEY_ID,
-        secretAccessKey: process.env.SECRET_ACCESS_KEY,
-        region: process.env.SES_REGION,
-      }),
-    );
+// export const sendEmail = async (
+//   email,
+//   content,
+//   subject,
+//   attachmentPath = null,
+// ) => {
+//   try {
+//     const transporter = await nodemailer.createTransport(
+//       sesTransport({
+//         accessKeyId: process.env.ACCESS_KEY_ID,
+//         secretAccessKey: process.env.SECRET_ACCESS_KEY,
+//         region: process.env.SES_REGION,
+//       }),
+//     );
 
-    const mailOptions = {
-      from: process.env.EMAIL_ADDRESS,
-      to: email,
-      subject: subject,
-      html: content,
-    };
+//     const mailOptions = {
+//       from: process.env.EMAIL_ADDRESS,
+//       to: email,
+//       subject: subject,
+//       html: content,
+//     };
 
-    const sendEmai = await transporter.sendMail(mailOptions);
+//     const sendEmai = await transporter.sendMail(mailOptions);
 
-    if (sendEmai.error)
-      console.log(sendEmai.error, 'error while sending email');
+//     if (sendEmai.error)
+//       console.log(sendEmai.error, 'error while sending email');
 
-    console.log(sendEmai);
+//     console.log(sendEmai);
 
-    return true;
-  } catch (err) {
-    console.log(err, 'sendEmailErr');
-    return false;
-  }
-};
+//     return true;
+//   } catch (err) {
+//     console.log(err, 'sendEmailErr');
+//     return false;
+//   }
+// };
 
 export const generateToken = async val => {
   return new Promise((resolve, reject) => {
@@ -156,90 +155,90 @@ export const fileUpload = async file => {
   }
 };
 
-export const uploadFileBuffer = async (buffer, newName, mimeType, userId) => {
-  try {
-    return await uploadOriginalImage(buffer, newName, mimeType, userId);
-  } catch (err) {
-    console.log(err, '========');
-    throw err;
-  }
-};
+// export const uploadFileBuffer = async (buffer, newName, mimeType, userId) => {
+//   try {
+//     return await uploadOriginalImage(buffer, newName, mimeType, userId);
+//   } catch (err) {
+//     console.log(err, '========');
+//     throw err;
+//   }
+// };
 
-async function uploadOriginalImage(fileBuffer, fileName, mimeType, userId) {
-  try {
-    AWS.config.update({
-      accessKeyId: process.env.ACCESS_KEY_ID,
-      secretAccessKey: process.env.SECRET_ACCESS_KEY,
-    });
-    if (fileBuffer.length > 5242880) {
-      return await uploadMultipart(
-        fileBuffer,
-        fileName,
-        mimeType,
-        fileBuffer.length,
-      );
-    } else {
-      let s3bucket = new AWS.S3();
-      let params = {
-        Bucket: process.env.BUCKET_NAME,
-        Key: userId + '/images/' + fileName,
-        Body: fileBuffer,
-        ContentType: mimeType
-      };
-      return await s3bucket.putObject(params).promise();
-    }
-  } catch (e) {
-    console.log(e, 'uploadOriginalImageErr');
-  }
-}
+// async function uploadOriginalImage(fileBuffer, fileName, mimeType, userId) {
+//   try {
+//     AWS.config.update({
+//       accessKeyId: process.env.ACCESS_KEY_ID,
+//       secretAccessKey: process.env.SECRET_ACCESS_KEY,
+//     });
+//     if (fileBuffer.length > 5242880) {
+//       return await uploadMultipart(
+//         fileBuffer,
+//         fileName,
+//         mimeType,
+//         fileBuffer.length,
+//       );
+//     } else {
+//       let s3bucket = new AWS.S3();
+//       let params = {
+//         Bucket: process.env.BUCKET_NAME,
+//         Key: userId + '/images/' + fileName,
+//         Body: fileBuffer,
+//         ContentType: mimeType
+//       };
+//       return await s3bucket.putObject(params).promise();
+//     }
+//   } catch (e) {
+//     console.log(e, 'uploadOriginalImageErr');
+//   }
+// }
 
-async function uploadMultipart(fileBuffer, fileName, mimeType, fileSize) {
-  let s3bucket = new AWS.S3(),
-    paramsData = [];
-  try {
-    let params = {
-      Bucket: process.env.BUCKET_NAME,
-      Key: 'images/' + fileName,
-      ContentType: mimeType,
-    };
+// async function uploadMultipart(fileBuffer, fileName, mimeType, fileSize) {
+//   let s3bucket = new AWS.S3(),
+//     paramsData = [];
+//   try {
+//     let params = {
+//       Bucket: process.env.BUCKET_NAME,
+//       Key: 'images/' + fileName,
+//       ContentType: mimeType,
+//     };
 
-    let createMultipart = await s3bucket
-      .createMultipartUpload(params)
-      .promise();
-    let partSize = 5242880,
-      parts = Math.ceil(fileSize / partSize);
-    for (let partNum = 0; partNum < parts; partNum++) {
-      let rangeStart = partNum * partSize,
-        end = Math.min(rangeStart + partSize, fileSize);
-      let updatedBuffer = fileBuffer.slice(rangeStart, end);
-      paramsData.push({
-        Body: updatedBuffer,
-        Bucket: process.env.BUCKET_NAME,
-        Key: 'images/' + fileName,
-        PartNumber: partNum + 1,
-        UploadId: createMultipart.UploadId,
-      });
-    }
-    let etagData = paramsData.map(async params => {
-      let temp = await s3bucket.uploadPart(params).promise();
-      return { ETag: temp.ETag, PartNumber: params.PartNumber };
-    });
-    let dataPacks = await Promise.all(etagData);
-    return s3bucket
-      .completeMultipartUpload({
-        Bucket: process.env.BUCKET_NAME,
-        Key: 'images/' + fileName,
-        MultipartUpload: {
-          Parts: dataPacks,
-        },
-        UploadId: createMultipart.UploadId,
-      })
-      .promise();
-  } catch (err) {
-    console.log(err, 'uploadMultipartErr');
-    return err;
-  }
-}
+//     let createMultipart = await s3bucket
+//       .createMultipartUpload(params)
+//       .promise();
+//     let partSize = 5242880,
+//       parts = Math.ceil(fileSize / partSize);
+//     for (let partNum = 0; partNum < parts; partNum++) {
+//       let rangeStart = partNum * partSize,
+//         end = Math.min(rangeStart + partSize, fileSize);
+//       let updatedBuffer = fileBuffer.slice(rangeStart, end);
+//       paramsData.push({
+//         Body: updatedBuffer,
+//         Bucket: process.env.BUCKET_NAME,
+//         Key: 'images/' + fileName,
+//         PartNumber: partNum + 1,
+//         UploadId: createMultipart.UploadId,
+//       });
+//     }
+//     let etagData = paramsData.map(async params => {
+//       let temp = await s3bucket.uploadPart(params).promise();
+//       return { ETag: temp.ETag, PartNumber: params.PartNumber };
+//     });
+//     let dataPacks = await Promise.all(etagData);
+//     return s3bucket
+//       .completeMultipartUpload({
+//         Bucket: process.env.BUCKET_NAME,
+//         Key: 'images/' + fileName,
+//         MultipartUpload: {
+//           Parts: dataPacks,
+//         },
+//         UploadId: createMultipart.UploadId,
+//       })
+//       .promise();
+//   } catch (err) {
+//     console.log(err, 'uploadMultipartErr');
+//     return err;
+//   }
+// }
 
 const writedirAsync = (path, data) => {
   return new Promise(function (resolve, reject) {
